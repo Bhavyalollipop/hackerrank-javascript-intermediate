@@ -1,29 +1,41 @@
-var width = 4;
-var height = 4;
-var isVertical = [false,true];
-var distance = [3,1];
-const h1 = isVertical[0] ? width - distance[0] : height - distance[0];
-const point = !isVertical[0] ? [[width,distance[0]],[width,h1]] : [[distance[0],height],[h1,height]]
-const point1 = [];
-var d = distance[1];
-for(var i=0;i<point.length;i++) {
-	if(isVertical[1]) {
-    		if(point[i][0] < d){
-            	d = Math.abs(point[i][0] - d)
-                point1.push([point[i][0], point[i][1]])
-            } else {
-            	point1.push([d, point[i][1]])
-                point1.push([point[i][0] - d, point[i][1]])
-            }
-    } else {
-    	if(point[i][1] < d){
-    		d = Math.abs(point[i][1] - d)
-            point1.push([point[i][0],point[i][1]])
-        } else { 
-         	point1.push([point[i][0],d])
-            point1.push([point[i][0],point[i][1] - d])
-        }
-    }
+
+function maxfromchild(arr) {
+	const data = arr.map(item => item[0] * item[1])
+    return Math.max(...data)
 }
-console.log(point)
-console.log(point1)
+function getMaxArea(w, h, isVertical, distance) {
+    var parent = []
+    var store = []
+    for(var i =0; i < isVertical.length; i++ ) {
+        var dist = distance[i];
+        var splitV = isVertical[i] ? 0 : 1
+        var child = parent.length === 0 ?  [ [w,h] ] :  parent
+        child = JSON.parse(JSON.stringify(child))
+        var newchild = []
+        var d = dist;
+        for(var j =0; j < child.length; j++) {
+                var dis = child[j][splitV] - d
+                if(child[j][splitV] < d) {
+                    newchild.push(child[j])
+                    d = Math.abs(dis)
+                } else {
+                	var red = splitV === 0 ? [d,child[j][1]] : [child[j][0],d]
+                	newchild.push(red)
+                    if(dis != 0) {
+                    child[j][splitV] = dis
+                    newchild.push(child[j])
+                    }
+                    d = 0
+                }
+              if(d === 0 ) {
+                d = dist
+              }
+        }
+        store.push(maxfromchild(newchild))
+        parent = newchild
+        
+    }
+    return store
+}
+console.log(getMaxArea(8, 6, [false,true,true],[3,1,6]))
+
